@@ -1,5 +1,6 @@
 package com.spring_cloud.eureka.client.product;
 
+import com.spring_cloud.eureka.client.product.dto.ProductListResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,13 +13,18 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class ProductController {
 
+    private final ProductService productService;
+
     @GetMapping("/testConnection")
     public String test() {
-        return "connect success";
+        throw new IllegalArgumentException("예외 전파 테스트");
+//        return "connect success";
     }
 
-    @GetMapping("/checkQuantity")
-    public boolean checkQuantity(@RequestBody List<Integer> productIds) {
-
+    @GetMapping
+    public List<ProductListResponse> getProducts(@RequestBody List<Long> productIds) {
+        return productService.findByIds(productIds).stream()
+            .map(ProductListResponse::from)
+            .toList();
     }
 }

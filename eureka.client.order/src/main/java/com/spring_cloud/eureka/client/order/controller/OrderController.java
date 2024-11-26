@@ -26,12 +26,12 @@ public class OrderController {
         return orderService.test();
     }
 
-//    @ResponseStatus(HttpStatus.OK)
-//    @PostMapping
-//    public OrderResponse createOrder(@RequestBody OrderRequest orderRequest,
-//                                     @RequestHeader(value = "X-User-Id") String userId,
-//                                     @RequestHeader(value = "X-Role") String role) {
-//
-//        return orderService.createOrder(orderRequest, userId);
-//    }
+    @ResponseStatus(HttpStatus.OK)
+    @PostMapping
+    public OrderResponse createOrder(@RequestBody OrderRequest orderRequest,
+                                     @RequestHeader(value = "X-User-Id") String userId,
+                                     @RequestHeader(value = "X-Role") String role) {
+
+        return orderService.createOrder(orderRequest, userId);
+    }
 }
