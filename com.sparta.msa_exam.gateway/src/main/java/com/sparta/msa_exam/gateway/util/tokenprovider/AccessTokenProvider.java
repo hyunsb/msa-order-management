@@ -1,5 +1,6 @@
 package com.sparta.msa_exam.gateway.util.tokenprovider;
 
+import com.sparta.msa_exam.gateway.exception.exceptions.UnAuthorizedException;
 import com.sparta.msa_exam.gateway.util.dategenerator.DateGenerator;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -38,7 +39,7 @@ public class AccessTokenProvider {
 
     private String extractToken(String rawData) {
         if (rawData == null || !rawData.startsWith(TOKEN_PREFIX)) {
-            throw new IllegalArgumentException("유효하지 않은 토큰 정보");
+            throw new UnAuthorizedException("유효하지 않은 토큰 정보");
         }
         return rawData.replaceAll(TOKEN_PREFIX, "").trim();
     }
@@ -48,14 +49,14 @@ public class AccessTokenProvider {
             return Jwts.parser().verifyWith(secretKey).build()
                 .parseSignedClaims(token).getPayload();
         } catch (JwtException exception) {
-            throw new IllegalArgumentException("유효하지 않은 토큰 정보");
+            throw new UnAuthorizedException("유효하지 않은 토큰 정보");
         }
     }
 
     private void validateExpirationDate(Date expirationDate) {
         Date currentDate = dateGenerator.getCurrentDate();
         if (currentDate.after(expirationDate)) {
-            throw new IllegalArgumentException("만료된 토큰");
+            throw new UnAuthorizedException("만료된 토큰");
         }
     }
 }
