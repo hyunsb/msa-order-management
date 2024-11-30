@@ -5,6 +5,7 @@ import com.sparta.msa_exam.product.application.domain.ProductForCreate;
 import com.sparta.msa_exam.product.application.outputport.ProductOutputPort;
 import com.sparta.msa_exam.product.framework.persistence.entity.ProductEntity;
 import com.sparta.msa_exam.product.framework.persistence.repository.ProductRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -20,5 +21,11 @@ public class ProductAdapter implements ProductOutputPort {
         productEntity = productRepository.save(productEntity);
 
         return productEntity.toDomain();
+    }
+
+    public List<Product> findAll() {
+        return productRepository.findAll().stream()
+            .map(ProductEntity::toDomain)
+            .toList();
     }
 }
