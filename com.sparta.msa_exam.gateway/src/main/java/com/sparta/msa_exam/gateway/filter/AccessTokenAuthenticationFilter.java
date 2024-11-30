@@ -17,7 +17,7 @@ import reactor.core.publisher.Mono;
 @Component
 public class AccessTokenAuthenticationFilter implements GlobalFilter {
 
-    private static final List<String> publicPaths = List.of("/auth/signIn", "/auth/signUp");
+    private static final List<String> publicPaths = List.of("/auth/sign-in", "/auth/sign-up");
     private static final String HEADER_AUTHORIZATION = "Authorization";
     private static final String HEADER_USER_ID = "X-User-Id";
 

@@ -23,13 +23,13 @@ public class AuthController {
     @Value("${server.port}")
     private Integer serverPort;
 
-    @PostMapping("/signIn")
+    @PostMapping("/sign-in")
     public ResponseEntity<Object> signIn(@RequestBody SignInRequest signInRequest) {
         String accessToken = authService.signIn(signInRequest.toDomain());
         return AuthApiResponse.successWithAccessToken(HttpStatus.NO_CONTENT, serverPort, accessToken);
     }
 
-    @PostMapping("/signUp")
+    @PostMapping("/sign-up")
     public ResponseEntity<Object> signUp(@RequestBody SignUpRequest signUpRequest) {
         authService.signUp(signUpRequest.toDomain());
         return AuthApiResponse.success(HttpStatus.NO_CONTENT, serverPort);
