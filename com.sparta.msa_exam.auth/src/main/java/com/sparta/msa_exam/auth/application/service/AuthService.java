@@ -7,6 +7,7 @@ import com.sparta.msa_exam.auth.application.outputport.MemberOutputPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
@@ -26,6 +27,7 @@ public class AuthService {
         return accessTokenService.createActorToken(member);
     }
 
+    @Transactional
     public void signUp(MemberForCreate memberForCreate) {
 
         if (memberOutputPort.findByUsername(memberForCreate.getUsername()).isPresent()) {
