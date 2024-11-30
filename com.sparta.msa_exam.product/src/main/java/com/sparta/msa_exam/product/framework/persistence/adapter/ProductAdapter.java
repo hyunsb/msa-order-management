@@ -28,4 +28,10 @@ public class ProductAdapter implements ProductOutputPort {
             .map(ProductEntity::toDomain)
             .toList();
     }
+
+    public List<Product> findByIdIn(List<Long> productIds) {
+        return productRepository.findAllById(productIds).stream()
+            .map(ProductEntity::toDomain)
+            .toList();
+    }
 }
