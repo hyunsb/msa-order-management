@@ -24,7 +24,7 @@ public class MemberEntity {
     private String password;
 
     public Member toDomain() {
-        return new Member(username, password);
+        return new Member(id, username, password);
     }
 
     public static MemberEntity from(MemberForCreate memberForCreate) {
