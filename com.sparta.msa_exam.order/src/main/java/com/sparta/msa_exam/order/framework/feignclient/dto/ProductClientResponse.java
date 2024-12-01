@@ -1,4 +1,4 @@
-package com.sparta.msa_exam.order.framework.feignClient.dto;
+package com.sparta.msa_exam.order.framework.feignclient.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

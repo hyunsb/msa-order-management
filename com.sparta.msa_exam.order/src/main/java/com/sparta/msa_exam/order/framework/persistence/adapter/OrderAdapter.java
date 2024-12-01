@@ -3,8 +3,10 @@ package com.sparta.msa_exam.order.framework.persistence.adapter;
 import com.sparta.msa_exam.order.application.domain.Order;
 import com.sparta.msa_exam.order.application.domain.OrderForCreate;
 import com.sparta.msa_exam.order.application.outputport.OrderOutputPort;
-import com.sparta.msa_exam.order.framework.feignClient.client.ProductClient;
-import com.sparta.msa_exam.order.framework.feignClient.dto.ProductClientResponse;
+import com.sparta.msa_exam.order.framework.cache.dto.OrderCache;
+import com.sparta.msa_exam.order.framework.cache.repository.OrderCacheRepository;
+import com.sparta.msa_exam.order.framework.feignclient.client.ProductClient;
+import com.sparta.msa_exam.order.framework.feignclient.dto.ProductClientResponse;
 import com.sparta.msa_exam.order.framework.persistence.entity.OrderEntity;
 import com.sparta.msa_exam.order.framework.persistence.entity.OrderProductEntity;
 import com.sparta.msa_exam.order.framework.persistence.repository.OrderProductRepository;
@@ -21,20 +23,24 @@ public class OrderAdapter implements OrderOutputPort {
     private final ProductClient productClient;
     private final OrderRepository orderRepository;
     private final OrderProductRepository orderProductRepository;
+    private final OrderCacheRepository orderCacheRepository;
 
     @Transactional
     @Override
-    public Long save(OrderForCreate orderForCreate) {
+    public Order save(OrderForCreate orderForCreate) {
         validateOrderedProducts(orderForCreate);
 
-        OrderEntity order = orderRepository.save(OrderEntity.from(orderForCreate));
+        OrderEntity orderEntity = orderRepository.save(OrderEntity.from(orderForCreate));
 
         List<OrderProductEntity> orderProducts = orderForCreate.getOrderedProducts().stream()
-            .map(product -> OrderProductEntity.from(order, product))
+            .map(product -> OrderProductEntity.from(orderEntity, product))
             .toList();
-        orderProductRepository.saveAll(orderProducts);
+        orderProducts = orderProductRepository.saveAll(orderProducts);
 
-        return order.getId();
+        Order order = orderEntity.toDomainWith(orderProducts);
+        orderCacheRepository.save(OrderCache.from(order));
+
+        return order;
     }
 
     private void validateOrderedProducts(OrderForCreate orderForCreate) {

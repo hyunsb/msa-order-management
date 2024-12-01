@@ -1,10 +1,11 @@
 package com.sparta.msa_exam.order.bootstrap.rest.controller;
 
 import com.sparta.msa_exam.order.application.domain.Order;
-import com.sparta.msa_exam.order.application.outputport.OrderOutputPort;
 import com.sparta.msa_exam.order.bootstrap.rest.dto.OrderApiResponse;
 import com.sparta.msa_exam.order.bootstrap.rest.dto.OrderApiResponse.Success;
 import com.sparta.msa_exam.order.bootstrap.rest.dto.OrderDetailResponse;
+import com.sparta.msa_exam.order.framework.cache.adapter.OrderCacheAdapter;
+import com.sparta.msa_exam.order.framework.cache.exception.CacheMissException;
 import com.sparta.msa_exam.order.framework.persistence.adapter.OrderAdapter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class OrderQueryController {
 
     private final OrderAdapter orderAdapter;
+    private final OrderCacheAdapter orderCacheAdapter;
 
     @Value("${server.port}")
     private String port;
@@ -29,9 +31,22 @@ public class OrderQueryController {
     public ResponseEntity<Success<OrderDetailResponse>> findOne(
         @PathVariable(name = "id") Long id
     ) {
+        try {
+            return findCache(id);
+        } catch (CacheMissException exception) {
+            return findOrder(id);
+        }
+    }
+
+    private ResponseEntity<Success<OrderDetailResponse>> findCache(Long id) {
+        Order order = orderCacheAdapter.findOne(id);
+        OrderDetailResponse orderResponse = OrderDetailResponse.from(order);
+        return OrderApiResponse.success(orderResponse, HttpStatus.OK, port);
+    }
+
+    private ResponseEntity<Success<OrderDetailResponse>> findOrder(Long id) {
         Order order = orderAdapter.findOne(id);
         OrderDetailResponse orderResponse = OrderDetailResponse.from(order);
-
         return OrderApiResponse.success(orderResponse, HttpStatus.OK, port);
     }
 }
