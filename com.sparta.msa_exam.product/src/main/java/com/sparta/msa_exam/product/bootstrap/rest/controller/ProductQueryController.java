@@ -6,8 +6,6 @@ import com.sparta.msa_exam.product.bootstrap.rest.dto.ProductApiResponse.Success
 import com.sparta.msa_exam.product.bootstrap.rest.dto.ProductClientResponse;
 import com.sparta.msa_exam.product.bootstrap.rest.dto.ProductListResponse;
 import com.sparta.msa_exam.product.framework.persistence.adapter.ProductAdapter;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,7 +38,7 @@ public class ProductQueryController {
     }
 
     // 추후 FindAll에서 동적쿼리로 search 기능 추가하면 FindAll을 사용하고 해당 메서드는 삭제할 것
-    @GetMapping("/list")
+    @PostMapping("/list")
     public List<ProductClientResponse> getProductIdIn(@RequestBody List<Long> productIds) {
         return productAdapter.findByIdIn(productIds).stream()
             .map(ProductClientResponse::from)

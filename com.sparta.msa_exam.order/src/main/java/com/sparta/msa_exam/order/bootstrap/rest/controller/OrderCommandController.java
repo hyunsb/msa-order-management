@@ -51,9 +51,7 @@ public class OrderCommandController {
         @RequestBody List<Request> createOrderRequest,
         @ActorId Long actorId
     ) {
-        if (fail) {
-            throw new IllegalArgumentException("실패");
-        }
+        checkCircuitBreakerExecute(fail);
 
         List<Product> orderedProducts = createOrderRequest.stream().map(Request::toDomain).toList();
         OrderForCreate orderForCreate = new OrderForCreate(orderedProducts, actorId);
@@ -63,9 +61,17 @@ public class OrderCommandController {
         return OrderApiResponse.success(orderId, HttpStatus.CREATED, port);
     }
 
+
+    @CircuitBreaker(name = "checkCircuitBreakerExecute", fallbackMethod = "fallbackCheckCircuitBreakerExecute")
+    public void checkCircuitBreakerExecute(boolean fail) {
+        if (fail) {
+            throw new IllegalArgumentException("CircuitBreaker execute");
+        }
+    }
+
     public ResponseEntity<Success<Long>> fallbackCreateOrder(
         boolean fail, List<Request> createOrderRequest, Long actorId, Throwable t
     ) {
-        throw new IllegalArgumentException("잠시 후에 주문 추가를 요청 해주세요.");
+        throw new IllegalArgumentException("잠시 후에 주문 추가를 요청 해주세요. 사유=" + t.getMessage());
     }
 }
