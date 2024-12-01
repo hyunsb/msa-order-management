@@ -24,7 +24,7 @@ public class OrderAdapter implements OrderOutputPort {
 
     @Transactional
     @Override
-    public void save(OrderForCreate orderForCreate) {
+    public Long save(OrderForCreate orderForCreate) {
         validateOrderedProducts(orderForCreate);
 
         OrderEntity order = orderRepository.save(OrderEntity.from(orderForCreate));
@@ -33,6 +33,8 @@ public class OrderAdapter implements OrderOutputPort {
             .map(product -> OrderProductEntity.from(order, product))
             .toList();
         orderProductRepository.saveAll(orderProducts);
+
+        return order.getId();
     }
 
     private void validateOrderedProducts(OrderForCreate orderForCreate) {

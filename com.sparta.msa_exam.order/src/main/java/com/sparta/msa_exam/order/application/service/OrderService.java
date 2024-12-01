@@ -11,7 +11,7 @@ public class OrderService {
 
     private final OrderOutputPort orderOutputPort;
 
-    public void save(OrderForCreate orderForCreate) {
-        orderOutputPort.save(orderForCreate);
+    public Long save(OrderForCreate orderForCreate) {
+        return orderOutputPort.save(orderForCreate);
     }
 }

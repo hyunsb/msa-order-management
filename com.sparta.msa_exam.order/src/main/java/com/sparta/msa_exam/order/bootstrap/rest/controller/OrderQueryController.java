@@ -23,7 +23,7 @@ public class OrderQueryController {
     private final OrderAdapter orderAdapter;
 
     @Value("${server.port}")
-    private Integer port;
+    private String port;
 
     @GetMapping("/{id}")
     public ResponseEntity<Success<OrderDetailResponse>> findOne(

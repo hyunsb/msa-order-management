@@ -15,14 +15,14 @@ public class OrderApiResponse {
 
     private static final String HEADER_SERVER_PORT = "Server-Port";
 
-    public static ResponseEntity<Object> success(HttpStatus httpStatus, Integer port) {
+    public static ResponseEntity<Object> success(HttpStatus httpStatus, String port) {
         return ResponseEntity.status(httpStatus)
             .header(HEADER_SERVER_PORT, String.valueOf(port))
             .build();
     }
 
     public static <T> ResponseEntity<Success<T>> success(
-        T data, HttpStatus httpStatus, Integer port
+        T data, HttpStatus httpStatus, String port
     ) {
         return ResponseEntity.status(httpStatus)
             .header(HEADER_SERVER_PORT, String.valueOf(port))
@@ -30,7 +30,7 @@ public class OrderApiResponse {
     }
 
     public static ResponseEntity<Object> successWithHeaders(
-        HttpStatus httpStatus, Integer port, Map<String, String> headers
+        HttpStatus httpStatus, String port, Map<String, String> headers
     ) {
         HttpHeaders httpHeaders = new HttpHeaders();
         headers.forEach(httpHeaders::add);
@@ -42,7 +42,7 @@ public class OrderApiResponse {
     }
 
     public static ResponseEntity<Error> error(
-        HttpStatus httpStatus, String message, Integer port
+        HttpStatus httpStatus, String message, String port
     ) {
         return ResponseEntity.status(httpStatus)
             .header(HEADER_SERVER_PORT, String.valueOf(port))

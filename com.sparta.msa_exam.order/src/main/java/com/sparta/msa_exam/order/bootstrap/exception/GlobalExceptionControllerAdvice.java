@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionControllerAdvice {
 
     @Value("${server.port}")
-    private Integer serverPort;
+    private String serverPort;
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<Error> runtimeExceptionHandle(RuntimeException exception) {
