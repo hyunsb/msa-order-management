@@ -35,4 +35,8 @@ public class OrderProductEntity {
             null, order, product.getProductId(), product.getQuantity()
         );
     }
+
+    public Product toDomain() {
+        return new Product(productId, quantity);
+    }
 }
