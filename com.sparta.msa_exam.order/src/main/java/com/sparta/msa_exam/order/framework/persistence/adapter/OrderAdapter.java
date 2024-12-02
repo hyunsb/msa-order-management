@@ -11,6 +11,7 @@ import com.sparta.msa_exam.order.framework.persistence.entity.OrderProductEntity
 import com.sparta.msa_exam.order.framework.persistence.repository.OrderProductRepository;
 import com.sparta.msa_exam.order.framework.persistence.repository.OrderRepository;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,13 +56,22 @@ public class OrderAdapter implements OrderOutputPort {
     @Transactional(readOnly = true)
     public Order findOne(Long id) {
 
+        Optional<Order> optionalOrder = orderCacheAdapter.findOne(id);
+        if (optionalOrder.isPresent()) {
+            return optionalOrder.get();
+        }
+
+        Order order = findOneFromDatabase(id);
+        orderCacheAdapter.save(order);
+
+        return order;
+    }
+
+    private Order findOneFromDatabase(Long id) {
         OrderEntity orderEntity = orderRepository.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 주문입니다."));
 
         List<OrderProductEntity> orderProducts = orderProductRepository.findAllByOrderId(id);
-        Order order = orderEntity.toDomainWith(orderProducts);
-        orderCacheAdapter.save(order);
-
-        return order;
+        return orderEntity.toDomainWith(orderProducts);
     }
 }
