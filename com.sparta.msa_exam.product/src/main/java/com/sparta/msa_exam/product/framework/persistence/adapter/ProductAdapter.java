@@ -3,6 +3,7 @@ package com.sparta.msa_exam.product.framework.persistence.adapter;
 import com.sparta.msa_exam.product.application.domain.Product;
 import com.sparta.msa_exam.product.application.domain.ProductForCreate;
 import com.sparta.msa_exam.product.application.outputport.ProductOutputPort;
+import com.sparta.msa_exam.product.framework.cache.adapter.ProductCacheAdapter;
 import com.sparta.msa_exam.product.framework.persistence.entity.ProductEntity;
 import com.sparta.msa_exam.product.framework.persistence.repository.ProductRepository;
 import java.util.List;
@@ -14,9 +15,12 @@ import org.springframework.stereotype.Component;
 public class ProductAdapter implements ProductOutputPort {
 
     private final ProductRepository productRepository;
+    private final ProductCacheAdapter productCacheAdapter;
 
     @Override
     public Product saveOne(ProductForCreate productForCreate) {
+        productCacheAdapter.deleteAll();
+
         ProductEntity productEntity = ProductEntity.from(productForCreate);
         productEntity = productRepository.save(productEntity);
 
@@ -24,6 +28,17 @@ public class ProductAdapter implements ProductOutputPort {
     }
 
     public List<Product> findAll() {
+        List<Product> cache = productCacheAdapter.findAll();
+        if (!cache.isEmpty()) {
+            return cache;
+        }
+        List<Product> products = findAllFromDatabase();
+        productCacheAdapter.saveAll(products);
+
+        return products;
+    }
+
+    private List<Product> findAllFromDatabase() {
         return productRepository.findAll().stream()
             .map(ProductEntity::toDomain)
             .toList();
