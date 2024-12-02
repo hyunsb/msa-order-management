@@ -4,8 +4,7 @@ import com.sparta.msa_exam.order.application.domain.Order;
 import com.sparta.msa_exam.order.application.domain.OrderForCreate;
 import com.sparta.msa_exam.order.application.outputport.OrderOutputPort;
 import com.sparta.msa_exam.order.framework.cache.adapter.OrderCacheAdapter;
-import com.sparta.msa_exam.order.framework.feignclient.client.ProductClient;
-import com.sparta.msa_exam.order.framework.feignclient.dto.ProductClientResponse;
+import com.sparta.msa_exam.order.framework.feignclient.adapter.ProductClientAdapter;
 import com.sparta.msa_exam.order.framework.persistence.entity.OrderEntity;
 import com.sparta.msa_exam.order.framework.persistence.entity.OrderProductEntity;
 import com.sparta.msa_exam.order.framework.persistence.repository.OrderProductRepository;
@@ -13,14 +12,16 @@ import com.sparta.msa_exam.order.framework.persistence.repository.OrderRepositor
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @RequiredArgsConstructor
 @Component
 public class OrderAdapter implements OrderOutputPort {
 
-    private final ProductClient productClient;
+    private final ProductClientAdapter productClientAdapter;
     private final OrderRepository orderRepository;
     private final OrderProductRepository orderProductRepository;
     private final OrderCacheAdapter orderCacheAdapter;
@@ -44,8 +45,7 @@ public class OrderAdapter implements OrderOutputPort {
     }
 
     private void validateOrderedProducts(OrderForCreate orderForCreate) {
-        List<Long> productIds = productClient.getProductIdIn(orderForCreate.getOrderedProductIds())
-                .stream().map(ProductClientResponse::getId).toList();
+        List<Long> productIds = productClientAdapter.getProductIdIn(orderForCreate.getOrderedProductIds());
 
         if (!orderForCreate.equalProductSize(productIds.size())) {
             List<Long> mismatchedProductIds = orderForCreate.mismatchedProductIds(productIds);

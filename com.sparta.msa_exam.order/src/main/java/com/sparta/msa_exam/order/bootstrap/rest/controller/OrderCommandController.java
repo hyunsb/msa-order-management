@@ -57,8 +57,6 @@ public class OrderCommandController {
         return OrderApiResponse.success(response, HttpStatus.CREATED, port);
     }
 
-
-    @CircuitBreaker(name = "checkCircuitBreakerExecute", fallbackMethod = "fallbackCheckCircuitBreakerExecute")
     public void checkCircuitBreakerExecute(boolean fail) {
         if (fail) {
             throw new IllegalArgumentException("CircuitBreaker execute");
