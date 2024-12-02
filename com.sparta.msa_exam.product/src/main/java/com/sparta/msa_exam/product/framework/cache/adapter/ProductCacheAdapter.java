@@ -16,10 +16,22 @@ public class ProductCacheAdapter {
 
     public List<Product> findAll() {
         List<Product> products = new ArrayList<>();
-        productCacheRepository.findAll().forEach(productCache ->
-            products.add(productCache.toDomain()));
-
+        productCacheRepository.findAll().forEach(productCache -> {
+            if (productCache != null) {
+                products.add(productCache.toDomain());
+            }
+        });
         return products;
+    }
+
+    public Product saveOne(Product product) {
+        ProductCache productCache = ProductCache.from(product);
+        return productCacheRepository.save(productCache).toDomain();
+    }
+
+    public void refreshCache(List<Product> products) {
+        deleteAll();
+        saveAll(products);
     }
 
     public void deleteAll() {

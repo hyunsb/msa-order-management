@@ -19,10 +19,10 @@ public class ProductAdapter implements ProductOutputPort {
 
     @Override
     public Product saveOne(ProductForCreate productForCreate) {
-        productCacheAdapter.deleteAll();
-
         ProductEntity productEntity = ProductEntity.from(productForCreate);
         productEntity = productRepository.save(productEntity);
+
+        productCacheAdapter.refreshCache(findAllFromDatabase());
 
         return productEntity.toDomain();
     }
