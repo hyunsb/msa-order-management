@@ -3,8 +3,7 @@ package com.sparta.msa_exam.order.framework.persistence.adapter;
 import com.sparta.msa_exam.order.application.domain.Order;
 import com.sparta.msa_exam.order.application.domain.OrderForCreate;
 import com.sparta.msa_exam.order.application.outputport.OrderOutputPort;
-import com.sparta.msa_exam.order.framework.cache.dto.OrderCache;
-import com.sparta.msa_exam.order.framework.cache.repository.OrderCacheRepository;
+import com.sparta.msa_exam.order.framework.cache.adapter.OrderCacheAdapter;
 import com.sparta.msa_exam.order.framework.feignclient.client.ProductClient;
 import com.sparta.msa_exam.order.framework.feignclient.dto.ProductClientResponse;
 import com.sparta.msa_exam.order.framework.persistence.entity.OrderEntity;
@@ -23,7 +22,7 @@ public class OrderAdapter implements OrderOutputPort {
     private final ProductClient productClient;
     private final OrderRepository orderRepository;
     private final OrderProductRepository orderProductRepository;
-    private final OrderCacheRepository orderCacheRepository;
+    private final OrderCacheAdapter orderCacheAdapter;
 
     @Transactional
     @Override
@@ -38,7 +37,7 @@ public class OrderAdapter implements OrderOutputPort {
         orderProducts = orderProductRepository.saveAll(orderProducts);
 
         Order order = orderEntity.toDomainWith(orderProducts);
-        orderCacheRepository.save(OrderCache.from(order));
+        orderCacheAdapter.save(order);
 
         return order;
     }
@@ -60,7 +59,9 @@ public class OrderAdapter implements OrderOutputPort {
             .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 주문입니다."));
 
         List<OrderProductEntity> orderProducts = orderProductRepository.findAllByOrderId(id);
+        Order order = orderEntity.toDomainWith(orderProducts);
+        orderCacheAdapter.save(order);
 
-        return orderEntity.toDomainWith(orderProducts);
+        return order;
     }
 }
