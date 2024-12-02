@@ -8,16 +8,26 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.redis.core.TimeToLive;
 
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 @RedisHash("order")
 public class OrderCache implements Serializable {
 
     private Long id;
     private Long orderedBy;
     private List<ProductCache> orderedProducts;
+
+    @TimeToLive
+    private Long timeToLive;
+
+    public OrderCache(Long id, Long orderedBy, List<ProductCache> orderedProducts) {
+        this.id = id;
+        this.orderedBy = orderedBy;
+        this.orderedProducts = orderedProducts;
+        timeToLive = 60L;
+    }
 
     public static OrderCache from(Order order) {
         return new OrderCache(
