@@ -22,8 +22,8 @@ public class FilterExceptionHandler {
         return ErrorResponse.error(HttpStatus.UNAUTHORIZED, exception.getMessage(), port);
     }
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<Error> runtimeExceptionHandle(RuntimeException exception) {
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Error> exceptionHandler(Exception exception) {
         log.error("runtimeException Handle= ", exception);
         return ErrorResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage(), port);
     }
